@@ -1,0 +1,449 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>경제통계학 강의노트</title>
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; }
+body {
+  font-family: "Noto Sans KR", "Malgun Gothic", "Apple SD Gothic Neo", sans-serif;
+  background: #f7f8fc;
+  color: #1f2937;
+  min-height: 100vh;
+}
+
+/* ── 상단 헤더 ── */
+#hero {
+  background: linear-gradient(135deg, #0f172a 0%, #1e3a8a 60%, #1d4ed8 100%);
+  color: #fff;
+  padding: 72px 40px 60px;
+  text-align: center;
+  position: relative;
+  overflow: hidden;
+}
+#hero::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.03'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+}
+.hero-badge {
+  display: inline-block;
+  background: rgba(255,255,255,.12);
+  border: 1px solid rgba(255,255,255,.25);
+  color: #bfdbfe;
+  font-size: 12px;
+  font-weight: 600;
+  padding: 5px 16px;
+  border-radius: 20px;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  margin-bottom: 20px;
+}
+#hero h1 {
+  font-size: 48px;
+  font-weight: 900;
+  letter-spacing: -1px;
+  line-height: 1.15;
+  margin-bottom: 10px;
+}
+#hero h1 span { color: #93c5fd; }
+#hero .subtitle {
+  font-size: 20px;
+  color: #93c5fd;
+  margin-bottom: 8px;
+}
+#hero .author {
+  font-size: 15px;
+  color: rgba(255,255,255,.55);
+  margin-top: 14px;
+}
+.hero-stats {
+  display: flex;
+  justify-content: center;
+  gap: 36px;
+  margin-top: 36px;
+}
+.stat { text-align: center; }
+.stat-num { font-size: 28px; font-weight: 800; color: #fff; }
+.stat-label { font-size: 12px; color: #93c5fd; margin-top: 2px; letter-spacing: .5px; }
+
+/* ── 본문 컨테이너 ── */
+#content {
+  max-width: 900px;
+  margin: 0 auto;
+  padding: 56px 24px 80px;
+}
+
+.section-label {
+  font-size: 12px;
+  font-weight: 700;
+  color: #6b7280;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  margin-bottom: 20px;
+}
+
+/* ── 챕터 그리드 ── */
+.chapters-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 16px;
+}
+
+.chapter-card {
+  background: #fff;
+  border: 1px solid #e5e7eb;
+  border-radius: 14px;
+  padding: 24px 28px;
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  transition: all .2s;
+  text-decoration: none;
+  color: inherit;
+  position: relative;
+  overflow: hidden;
+}
+.chapter-card:hover {
+  border-color: #93c5fd;
+  box-shadow: 0 4px 20px rgba(37,99,235,.1);
+  transform: translateY(-2px);
+}
+.chapter-card.available { cursor: pointer; }
+.chapter-card.coming-soon {
+  opacity: .65;
+  cursor: default;
+  background: #fafafa;
+}
+.chapter-card.coming-soon:hover {
+  transform: none;
+  box-shadow: none;
+  border-color: #e5e7eb;
+}
+
+/* 왼쪽 챕터 번호 배지 */
+.ch-badge {
+  width: 56px;
+  height: 56px;
+  border-radius: 14px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  font-weight: 800;
+}
+.chapter-card.available .ch-badge {
+  background: linear-gradient(135deg, #1d4ed8, #2563eb);
+  color: #fff;
+}
+.chapter-card.coming-soon .ch-badge {
+  background: #f3f4f6;
+  color: #9ca3af;
+}
+.ch-badge .ch-label { font-size: 10px; font-weight: 600; letter-spacing: .5px; }
+.ch-badge .ch-num   { font-size: 22px; line-height: 1; }
+
+/* 중간 텍스트 */
+.ch-info { flex: 1; min-width: 0; }
+.ch-title {
+  font-size: 17px;
+  font-weight: 700;
+  color: #111827;
+  margin-bottom: 4px;
+}
+.chapter-card.coming-soon .ch-title { color: #6b7280; }
+.ch-subtitle { font-size: 13px; color: #6b7280; }
+.ch-topics {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-top: 10px;
+}
+.topic-tag {
+  font-size: 11.5px;
+  background: #eff6ff;
+  color: #1d4ed8;
+  padding: 2px 10px;
+  border-radius: 10px;
+  font-weight: 500;
+}
+.chapter-card.coming-soon .topic-tag {
+  background: #f3f4f6;
+  color: #9ca3af;
+}
+
+/* 오른쪽 상태 표시 */
+.ch-status {
+  flex-shrink: 0;
+  font-size: 12px;
+  font-weight: 600;
+  padding: 4px 12px;
+  border-radius: 20px;
+}
+.status-done {
+  background: #dcfce7;
+  color: #16a34a;
+}
+.status-soon {
+  background: #f3f4f6;
+  color: #9ca3af;
+}
+
+/* 오른쪽 화살표 */
+.ch-arrow {
+  font-size: 20px;
+  color: #2563eb;
+  margin-left: 4px;
+  flex-shrink: 0;
+}
+.chapter-card.coming-soon .ch-arrow { display: none; }
+
+/* ── 안내 박스 ── */
+.info-banner {
+  background: #fffbeb;
+  border: 1px solid #fde68a;
+  border-left: 4px solid #f59e0b;
+  border-radius: 10px;
+  padding: 16px 20px;
+  margin-top: 40px;
+  font-size: 14px;
+  color: #78350f;
+  line-height: 1.7;
+}
+.info-banner strong { color: #b45309; }
+
+/* ── 푸터 ── */
+footer {
+  text-align: center;
+  padding: 24px;
+  font-size: 13px;
+  color: #9ca3af;
+  border-top: 1px solid #e5e7eb;
+  margin-top: 40px;
+}
+
+@media (max-width: 600px) {
+  #hero h1 { font-size: 32px; }
+  .hero-stats { gap: 20px; }
+  .chapter-card { padding: 18px 16px; gap: 14px; }
+  .ch-badge { width: 46px; height: 46px; }
+}
+</style>
+</head>
+<body>
+
+<!-- 히어로 헤더 -->
+<header id="hero">
+  <div class="hero-badge">Lecture Notes</div>
+  <h1>경제<span>통계학</span></h1>
+  <p class="subtitle">Statistics for Economics</p>
+  <p class="author">경제학과</p>
+  <div class="hero-stats">
+    <div class="stat">
+      <div class="stat-num">9</div>
+      <div class="stat-label">Chapters</div>
+    </div>
+    <div class="stat">
+      <div class="stat-num">639</div>
+      <div class="stat-label">Slides</div>
+    </div>
+    <div class="stat">
+      <div class="stat-num">1</div>
+      <div class="stat-label">Published</div>
+    </div>
+  </div>
+</header>
+
+<!-- 챕터 목록 -->
+<main id="content">
+  <p class="section-label">강의 목차</p>
+
+  <div class="chapters-grid">
+
+    <!-- Chapter 1 — 완료 -->
+    <a href="ch01.html" class="chapter-card available">
+      <div class="ch-badge">
+        <span class="ch-label">CH</span>
+        <span class="ch-num">1</span>
+      </div>
+      <div class="ch-info">
+        <div class="ch-title">기술통계량</div>
+        <div class="ch-subtitle">Descriptive Statistics</div>
+        <div class="ch-topics">
+          <span class="topic-tag">수학 기초</span>
+          <span class="topic-tag">평균·분산</span>
+          <span class="topic-tag">왜도·첨도</span>
+          <span class="topic-tag">시각화</span>
+        </div>
+      </div>
+      <span class="ch-status status-done">공개</span>
+      <span class="ch-arrow">→</span>
+    </a>
+
+    <!-- Chapter 2 -->
+    <div class="chapter-card coming-soon">
+      <div class="ch-badge">
+        <span class="ch-label">CH</span>
+        <span class="ch-num">2</span>
+      </div>
+      <div class="ch-info">
+        <div class="ch-title">확률이론</div>
+        <div class="ch-subtitle">Probability Theory</div>
+        <div class="ch-topics">
+          <span class="topic-tag">표본공간</span>
+          <span class="topic-tag">확률의 공리</span>
+          <span class="topic-tag">조건부확률</span>
+          <span class="topic-tag">베이즈 정리</span>
+        </div>
+      </div>
+      <span class="ch-status status-soon">준비 중</span>
+    </div>
+
+    <!-- Chapter 3 -->
+    <div class="chapter-card coming-soon">
+      <div class="ch-badge">
+        <span class="ch-label">CH</span>
+        <span class="ch-num">3</span>
+      </div>
+      <div class="ch-info">
+        <div class="ch-title">확률변수</div>
+        <div class="ch-subtitle">Random Variables</div>
+        <div class="ch-topics">
+          <span class="topic-tag">이산·연속 확률변수</span>
+          <span class="topic-tag">PMF·PDF</span>
+          <span class="topic-tag">기댓값</span>
+          <span class="topic-tag">CDF</span>
+        </div>
+      </div>
+      <span class="ch-status status-soon">준비 중</span>
+    </div>
+
+    <!-- Chapter 4 -->
+    <div class="chapter-card coming-soon">
+      <div class="ch-badge">
+        <span class="ch-label">CH</span>
+        <span class="ch-num">4</span>
+      </div>
+      <div class="ch-info">
+        <div class="ch-title">결합확률분포</div>
+        <div class="ch-subtitle">Joint Probability Distribution</div>
+        <div class="ch-topics">
+          <span class="topic-tag">결합분포</span>
+          <span class="topic-tag">주변분포</span>
+          <span class="topic-tag">공분산</span>
+          <span class="topic-tag">상관계수</span>
+        </div>
+      </div>
+      <span class="ch-status status-soon">준비 중</span>
+    </div>
+
+    <!-- Chapter 5 -->
+    <div class="chapter-card coming-soon">
+      <div class="ch-badge">
+        <span class="ch-label">CH</span>
+        <span class="ch-num">5</span>
+      </div>
+      <div class="ch-info">
+        <div class="ch-title">확률분포모임</div>
+        <div class="ch-subtitle">Families of Distributions</div>
+        <div class="ch-topics">
+          <span class="topic-tag">이항분포</span>
+          <span class="topic-tag">정규분포</span>
+          <span class="topic-tag">t분포</span>
+          <span class="topic-tag">카이제곱·F분포</span>
+        </div>
+      </div>
+      <span class="ch-status status-soon">준비 중</span>
+    </div>
+
+    <!-- Chapter 6 -->
+    <div class="chapter-card coming-soon">
+      <div class="ch-badge">
+        <span class="ch-label">CH</span>
+        <span class="ch-num">6</span>
+      </div>
+      <div class="ch-info">
+        <div class="ch-title">표본분포와 중심극한정리</div>
+        <div class="ch-subtitle">Sampling Distribution &amp; CLT</div>
+        <div class="ch-topics">
+          <span class="topic-tag">표본분포</span>
+          <span class="topic-tag">대수의 법칙</span>
+          <span class="topic-tag">중심극한정리</span>
+        </div>
+      </div>
+      <span class="ch-status status-soon">준비 중</span>
+    </div>
+
+    <!-- Chapter 7 -->
+    <div class="chapter-card coming-soon">
+      <div class="ch-badge">
+        <span class="ch-label">CH</span>
+        <span class="ch-num">7</span>
+      </div>
+      <div class="ch-info">
+        <div class="ch-title">점추정</div>
+        <div class="ch-subtitle">Point Estimation</div>
+        <div class="ch-topics">
+          <span class="topic-tag">불편추정량</span>
+          <span class="topic-tag">최대우도추정</span>
+          <span class="topic-tag">최소분산</span>
+        </div>
+      </div>
+      <span class="ch-status status-soon">준비 중</span>
+    </div>
+
+    <!-- Chapter 8 -->
+    <div class="chapter-card coming-soon">
+      <div class="ch-badge">
+        <span class="ch-label">CH</span>
+        <span class="ch-num">8</span>
+      </div>
+      <div class="ch-info">
+        <div class="ch-title">구간추정</div>
+        <div class="ch-subtitle">Interval Estimation</div>
+        <div class="ch-topics">
+          <span class="topic-tag">신뢰구간</span>
+          <span class="topic-tag">신뢰수준</span>
+          <span class="topic-tag">표본크기 결정</span>
+        </div>
+      </div>
+      <span class="ch-status status-soon">준비 중</span>
+    </div>
+
+    <!-- Chapter 9 -->
+    <div class="chapter-card coming-soon">
+      <div class="ch-badge">
+        <span class="ch-label">CH</span>
+        <span class="ch-num">9</span>
+      </div>
+      <div class="ch-info">
+        <div class="ch-title">가설검정</div>
+        <div class="ch-subtitle">Hypothesis Testing</div>
+        <div class="ch-topics">
+          <span class="topic-tag">귀무·대립가설</span>
+          <span class="topic-tag">1종·2종 오류</span>
+          <span class="topic-tag">p-value</span>
+          <span class="topic-tag">검정통계량</span>
+        </div>
+      </div>
+      <span class="ch-status status-soon">준비 중</span>
+    </div>
+
+  </div>
+
+  <div class="info-banner">
+    <strong>📌 업데이트 안내</strong><br>
+    현재 제1장(기술통계량)이 공개되어 있습니다. 나머지 챕터는 순차적으로 업데이트될 예정입니다.
+  </div>
+</main>
+
+<footer>
+  경제통계학 강의노트 &nbsp;|&nbsp; Statistics for Economics
+</footer>
+
+</body>
+</html>
